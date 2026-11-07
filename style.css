@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IM+Fell+English&family=IM+Fell+English+SC&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap");
 /* Owner: UI (see README)
 
    STYLE GUIDE: one visual system for the whole game
@@ -23,6 +23,8 @@
   --bg: #0b0a05; --panel: #1b190f; --panel-deep: #0d0c06; --wall: #a09556; --text: #e4dcbc; --text-dim: #a79f8a;
   --gold: #c9b458; --gold-hi: #e8c86a; --danger: #8c1a15; --danger-hi: #e0655b; --clue: #8fbf86; --clue-hi: #a8cf9f;
   --t-small: .12s; --t-medium: .35s; --t-big: .55s;
+  --print: "IM Fell English", "Times New Roman", serif;
+  --print-sc: "IM Fell English SC", "Times New Roman", serif;
   --tension: 0;
 }
 body[data-stage="1"] { --tension: .2; }
@@ -210,7 +212,9 @@ body[data-phase="lobby"] :is(#hud, #opponent, #room, #message, #inventory, #jour
 #win p { opacity: .85; }
 
 /* --- Eerie restyle --- */
-h1, h2, #timer, #loop-count, #hud::before { font-family: "Special Elite", "Courier New", monospace; }
+h1 { font-family: var(--print-sc); letter-spacing: .04em; }
+h2 { font-family: var(--print); letter-spacing: .02em; }
+#timer, #loop-count, #hud::before { font-family: "Special Elite", "Courier New", monospace; }
 /* loop reset: harsh static instead of a white flash */
 #loop-flash { background: repeating-linear-gradient(0deg, #d9cf8a 0 2px, #15130a 2px 5px); color: #fff; text-shadow: 0 0 6px #000, 0 0 2px #000, 0 0 14px #000; }
 #loop-flash.show { animation: staticburst 1.6s linear; }
@@ -804,6 +808,107 @@ body:has(#journal .empty) #journal { max-height: 150px; }
 #flashfx { position: absolute; inset: 0; z-index: 8; pointer-events: none; background: #f4e6c8; opacity: 0; }
 #flashfx.show { animation: flashfx .45s ease-out; }
 @keyframes flashfx { 0% { opacity: .55; } 100% { opacity: 0; } }
+
+/* --- Horror front page: title, fog, Create/Join/Solo --- */
+.fog { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(circle at 30% 40%, #1a150a 0, #0b0a05 55%, #050402 100%);
+  opacity: 0; }
+.fog::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(circle at 70% 60%, #141209 0, transparent 60%),
+              radial-gradient(circle at 20% 20%, #1a150a 0, transparent 50%);
+  opacity: .4; animation: fogDrift 20s ease-in-out infinite alternate; }
+@keyframes fogDrift { to { transform: translateX(60px) translateY(-20px); } }
+body.no-flicker .fog::after { animation: none; opacity: .35; }
+
+/* Start screen card: framed like the in-game HUD */
+#lobby .card.start { position: relative; z-index: 2; max-width: 620px; padding: 32px 28px;
+  border-radius: 16px; background: var(--panel); border: 2px solid var(--gold);
+  box-shadow: 0 20px 60px #000d, inset 0 0 0 1px #c9b45822;
+  text-align: center; animation: cardFade 1.2s ease-out; }
+@keyframes cardFade { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; } }
+
+/* Waiting screen card */
+#lobby .card.waiting { position: relative; z-index: 2; max-width: 520px; padding: 32px 28px;
+  border-radius: 16px; background: var(--panel); border: 2px solid var(--gold);
+  box-shadow: 0 20px 60px #000d, inset 0 0 0 1px #c9b45822;
+  text-align: center; animation: cardFade 1.2s ease-out; }
+
+/* Lobby title: big, atmospheric, serif print font */
+#lobby h1 { font-family: var(--print-sc); font-size: clamp(3rem, 10vw, 7rem);
+  line-height: 1; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--gold); text-shadow: 0 0 40px #c9b45855, 0 4px 0 #0a0904;
+  margin: 0 0 16px; opacity: 0; animation: titleFadeIn 1.6s ease-out forwards;
+  animation-delay: .2s; }
+@keyframes titleFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; } }
+body.no-flicker #lobby h1 { animation: titleFadeIn 1.6s ease-out forwards; }
+
+#lobby p { margin: 0 0 24px; opacity: .85; line-height: 1.5; font-size: 1.05rem; max-width: 46ch; margin-inline: auto; }
+
+/* Ways: Create and Join as two big cards side by side */
+#lobby .ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 6px; }
+#lobby .way { position: relative; z-index: 2; gap: 10px; padding: 20px 16px 16px;
+  border-radius: 12px; border: 1px solid #c9b45844;
+  background: linear-gradient(180deg, #23200f, #15130a);
+  box-shadow: 0 12px 32px #000a, inset 0 0 0 1px #c9b45822;
+  transition: transform .2s, border-color .2s, box-shadow .2s; }
+#lobby .way:hover, #lobby .way:focus-within {
+  transform: translateY(-3px); border-color: var(--gold-hi);
+  box-shadow: 0 16px 40px #000d, 0 0 24px #c9b45833; }
+#lobby .way h2 { font-family: var(--print); margin: 0 0 6px; color: var(--gold-hi);
+  letter-spacing: .05em; text-transform: uppercase; font-size: 1.15rem; }
+#lobby .way .way-note { margin: 0 0 14px; opacity: .65; font-size: .85rem; max-width: none; line-height: 1.4; }
+
+#lobby .way button { width: 100%; padding: 12px; font-family: var(--print); font-weight: 700;
+  font-size: 1rem; border: 0; border-radius: 8px; background: var(--gold); color: #111;
+  cursor: pointer; transition: transform .1s; }
+#lobby .way button:active { transform: scale(.97); }
+#lobby .way button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Solo button: ghost style, below the cards */
+#lobby button.solo { margin-top: 22px; width: auto; padding: 10px 24px;
+  background: none; color: #d8d0ba; border: 1px solid #c9b45866; border-radius: 8px;
+  font-family: var(--print); font-weight: 500; cursor: pointer; }
+#lobby button.solo:hover { background: var(--panel); border-color: var(--gold); color: var(--gold-hi); }
+#lobby button.solo:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Settings button in lobby */
+#lobby-settings { margin-top: 10px; width: auto; padding: 8px 18px;
+  background: none; color: #a79f8a; border: 1px solid #c9b45844; border-radius: 8px;
+  font-family: var(--print); font-weight: 500; cursor: pointer; }
+#lobby-settings:hover { background: var(--panel-deep); color: var(--gold); border-color: var(--gold); }
+#lobby-settings:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Loop tiles: keep the gold sliding line */
+#lobby .loops { position: relative; display: flex; gap: 8px; margin: 2px 0 4px; padding: 0 0 9px; border: 0; }
+#lobby .loops legend { padding: 0; margin-bottom: 6px; font-size: .85rem; opacity: .7; }
+#lobby .loop { position: relative; flex: 1; }
+#lobby .loop[hidden] { display: none; }
+#lobby .loop input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+#lobby .tile { display: grid; place-items: center; padding: 10px 2px 6px; border-radius: 8px;
+  border: 1px dashed #c9b45855; background: var(--panel-deep); color: #d8d0ba;
+  line-height: 1.1; transition: border-color .2s, background .2s, color .2s; }
+#lobby .tile b { font-size: 1.4rem; font-family: var(--print); }
+#lobby .tile small { font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+#lobby .loop input:checked + .tile { border-style: solid; border-color: var(--gold);
+  background: #2a2510; color: var(--gold); box-shadow: inset 0 0 12px #c9b45822; }
+#lobby .loop input:focus-visible + .tile { outline: 2px solid #fff; outline-offset: 2px; }
+#lobby .loop-line { position: absolute; left: 0; bottom: 0; width: 0; height: 3px; border-radius: 2px;
+  background: var(--gold); box-shadow: 0 0 8px #c9b45899; transition: left .25s ease, width .25s ease; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* Error message */
+#lobby-error { margin: 14px auto 0; color: var(--danger-hi); font-weight: 700; }
+
+/* Phone: stack the cards */
+@media (max-width: 560px) { #lobby .ways { grid-template-columns: minmax(0, 1fr); } }
+
+/* Reduced motion: no drifting fog, no card entrance slide */
+@media (prefers-reduced-motion: reduce) {
+  .fog::after { animation: none; }
+  #lobby .card.start, #lobby .card.waiting { animation: none; }
+  #lobby .way, #lobby .tile, #lobby .loop-line { transition: none; }
+  #lobby .way:hover, #lobby .way:focus-within { transform: none; }
+}
 body.no-flicker :is(.scene.jolt-big, .scene.jolt-small, #flashfx.show, .obj.beckon .art) { animation: none; }
 @media (prefers-reduced-motion: reduce) { :is(.scene.jolt-big, .scene.jolt-small, #flashfx.show, .fly, .obj.beckon .art) { animation: none !important; } .fly { display: none; } }
 /* stage 3: the room is shorter now the message sits below it, so the lift's contents are scaled to fit under the dial */

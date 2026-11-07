@@ -16,14 +16,16 @@ function render() {
   // Lobby: create or join a room, then "waiting" with the code once connect() has set playerName
   const lobby = $("lobby"), url = new URLSearchParams(location.search);
   set(lobby, "innerHTML", phase !== "lobby" ? "" : game.playerName
-    ? `<div class="card"><h1>Time Loop Escape</h1>
+    ? `<div class="card waiting"><div class="fog"></div>
+        <h1>Time Loop Escape</h1>
         <p class="wait" role="status"><span class="spinner" aria-hidden="true"></span>Waiting for your partner, ${esc(game.playerName)}…</p>
         <p>Send your partner this room code:</p>
         <div class="code-row"><strong id="room-code-shown">${esc(game.code)}</strong><button type="button" id="copy-code">Copy</button></div><p id="lobby-note" role="status"></p></div>`
-    : `<form class="card" id="lobby-form" novalidate><h1>Time Loop Escape</h1>
+    : `<form class="card start" id="lobby-form" novalidate><div class="fog"></div>
+        <h1>Time Loop Escape</h1>
         <p>Two people are trapped, and neither gets out alone. Half of your clues are in your partner's room.</p>
         <label for="player-name">Your name</label>
-        <input id="player-name" maxlength="20" autocomplete="nickname" placeholder="e.g. Sam" value="${esc(url.get("name") || "")}">
+        <input id="player-name" maxlength="20" autocomplete="nickname" placeholder="e.g. Sam" value="${esc(url.get("name") || "")}" autofocus>
         <div class="ways">
           <div class="way way-create"><h2>Create a room</h2><p class="way-note">Pick how long each loop lasts, then share the code.</p>
             <fieldset class="loops" id="loop-seconds"><legend>Time per loop</legend>
@@ -37,7 +39,8 @@ function render() {
             <button name="how" value="join">Join room</button></div>
         </div>
         <p id="lobby-error" role="alert" hidden></p>
-        <button class="solo" name="how" value="solo">Play alone with a practice partner</button></form>`);
+        <button class="solo" name="how" value="solo">Play alone with a practice partner</button>
+        <button class="settings" type="button" id="lobby-settings">⚙ Settings</button></form>`);
   // net.js reports "room is full" and "nobody has opened this room" through game.message
   if (phase === "lobby" && game.message) {
     const box = $("lobby-error") || $("lobby-note");

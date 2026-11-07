@@ -25,3 +25,13 @@ setInterval(() => {  // ponytail: polls instead of hooking render() (ui.js isn't
 addEventListener("keydown", (e) => {
   if (e.shiftKey && e.key.toUpperCase() === "N" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) adminSkip();
 });
+
+// Lobby settings button: open the settings panel from the front page
+const lobbySettings = document.getElementById("lobby-settings");
+if (lobbySettings) {
+  lobbySettings.addEventListener("click", () => {
+    const panel = document.getElementById("settings-panel");
+    const btn = document.getElementById("settings-btn");
+    if (panel && btn) { panel.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+  });
+}
